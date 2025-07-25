@@ -6,8 +6,6 @@ import (
 	"strconv"
 	"wesocial/repo"
 	"wesocial/service"
-
-	"github.com/gorilla/mux"
 )
 
 type PostHandler struct {
@@ -41,8 +39,9 @@ func (h *PostHandler) AddNewPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	byUserIdStr := vars["user_id"]
+	// vars := mux.Vars(r)
+	// byUserIdStr := vars["user_id"]
+	byUserIdStr := r.URL.Query().Get("user_id")
 
 	byUserId, err := strconv.Atoi(byUserIdStr)
 	if err != nil {
