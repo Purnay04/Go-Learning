@@ -53,7 +53,7 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	token, err := utils.CreateToken(map[string]any{
 		"username": user.Name,
-		"exp":      time.Now().Add(time.Hour * 1).Unix(),
+		"exp":      time.Now().Add(time.Hour).Unix(),
 	})
 	if err != nil {
 		http.Error(w, "internal server error", http.StatusInternalServerError)

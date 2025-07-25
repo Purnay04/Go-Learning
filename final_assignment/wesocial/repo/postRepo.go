@@ -1,5 +1,13 @@
 package repo
 
+// CREATE TABLE posts (
+//     post_id SERIAL PRIMARY KEY,
+//     title TEXT NOT NULL,
+//     content TEXT NOT NULL,
+//     created_by INTEGER NOT NULL,
+//     created_on DATE NULL
+// );
+
 import (
 	"database/sql"
 	"time"
@@ -28,7 +36,7 @@ func NewPostRepository(db *sql.DB) PostRepository {
 }
 
 func (postRepo *PostRepositoryImpl) CreatePost(newPost *Post) (*Post, error) {
-	query := `INSERT INTO post (title, content, created_by, created_on) values ($1, $2, $3, $4) RETURNING post_id`
+	query := `INSERT INTO posts (title, content, created_by, created_on) values ($1, $2, $3, $4) RETURNING post_id`
 	interpolateVals := []interface{}{
 		newPost.Title,
 		newPost.Content,
@@ -44,7 +52,7 @@ func (postRepo *PostRepositoryImpl) CreatePost(newPost *Post) (*Post, error) {
 }
 
 func (postRepo *PostRepositoryImpl) GetAllPost() ([]Post, error) {
-	query := `SELECT title, content, created_by, created_on FROM post`
+	query := `SELECT title, content, created_by, created_on FROM posts`
 	result, err := postRepo.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -63,7 +71,7 @@ func (postRepo *PostRepositoryImpl) GetAllPost() ([]Post, error) {
 }
 
 func (postRepo *PostRepositoryImpl) GetPostByUser(userId int) ([]Post, error) {
-	query := `SELECT title, content, created_by, created_on FROM post WHERE created_by = $1`
+	query := `SELECT title, content, created_by, created_on FROM posts WHERE created_by = $1`
 	result, err := postRepo.db.Query(query, userId)
 	if err != nil {
 		return nil, err

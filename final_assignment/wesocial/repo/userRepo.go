@@ -1,7 +1,15 @@
 package repo
 
+// CREATE TABLE users (
+//  user_id SERIAL PRIMARY KEY,
+//  name TEXT NOT NULL,
+// 	email TEXT NOT NULL,
+// 	password TEXT NOT NULL
+// );
+
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -28,7 +36,7 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (userRepo *UserRepositoryImpl) AuthenticateUser(email string, password string) (*User, error) {
-	query := `SELECT user_id, name, email FROM user where email = $1 and password = $2`
+	query := `SELECT user_id, name, email FROM users where email = $1 and password = $2`
 	interpolateVals := []interface{}{
 		email,
 		password,
@@ -63,7 +71,7 @@ func (userRepo *UserRepositoryImpl) AddUser(newUser *User) (*User, error) {
 		return nil, fmt.Errorf("User already exist with username or email")
 	}
 
-	query := `INSERT INTO user(name, email, password) VALUES ($1, $2, $3) RETURING user_id`
+	query := `INSERT INTO users(name, email, password) VALUES ($1, $2, $3) RETURNING user_id`
 	interpolateVals := []interface{}{newUser.Name, newUser.Email, newUser.Password}
 
 	row := userRepo.db.QueryRow(query, interpolateVals...)
@@ -78,7 +86,7 @@ func (userRepo *UserRepositoryImpl) AddUser(newUser *User) (*User, error) {
 
 func (userRepo *UserRepositoryImpl) GetUserById(id int) (*User, error) {
 	user := &User{}
-	query := `SELECT name, email FROM user WHERE user_id = $1`
+	query := `SELECT name, email FROM users WHERE user_id = $1`
 	err := userRepo.db.QueryRow(query, id).Scan(&user.Name, &user.Email)
 
 	if err != nil {
@@ -90,10 +98,12 @@ func (userRepo *UserRepositoryImpl) GetUserById(id int) (*User, error) {
 
 func (userRepo *UserRepositoryImpl) GetUserByUsernameOrEmail(username string, email string) (*User, error) {
 	user := &User{}
-	query := `SELECT user_id, name, email FROM user WHERE name = $1 or email = $2`
+	query := `SELECT user_id, name, email FROM users WHERE name = $1 or email = $2`
 	err := userRepo.db.QueryRow(query, username, email).Scan(&user.Id, &user.Name, &user.Email)
 
-	if err != nil {
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	} else if err != nil {
 		return nil, err
 	}
 

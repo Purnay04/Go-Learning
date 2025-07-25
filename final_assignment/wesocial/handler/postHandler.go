@@ -41,13 +41,17 @@ func (h *PostHandler) AddNewPost(w http.ResponseWriter, r *http.Request) {
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	// vars := mux.Vars(r)
 	// byUserIdStr := vars["user_id"]
+	var byUserId int
+	var err error
 	byUserIdStr := r.URL.Query().Get("user_id")
-
-	byUserId, err := strconv.Atoi(byUserIdStr)
-	if err != nil {
-		http.Error(w, "", http.StatusBadRequest)
-		return
+	if byUserIdStr != "" {
+		byUserId, err = strconv.Atoi(byUserIdStr)
+		if err != nil {
+			http.Error(w, "", http.StatusBadRequest)
+			return
+		}
 	}
+
 	posts, err := h.postService.GetAllPost(byUserId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

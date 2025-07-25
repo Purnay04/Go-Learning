@@ -29,7 +29,7 @@ func (postService *PostServiceImpl) AddPost(newPost *repo.Post) (*repo.Post, err
 	if newPost.Content == "" {
 		return nil, fmt.Errorf("post contents are missing")
 	}
-	if newPost.CreatedBy != 0 {
+	if newPost.CreatedBy == 0 {
 		return nil, fmt.Errorf("post creator id should be present")
 	}
 	if newPost.CreatedOn.IsZero() {

@@ -2,11 +2,13 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"strings"
 	"wesocial/handler"
 	"wesocial/repo"
 	"wesocial/service"
+	"wesocial/utils"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
@@ -25,7 +27,7 @@ func tokenMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
 		token := strings.TrimPrefix(authorizationHeader, tokenPrefix)
 		tokenStruct, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-			return token, nil
+			return utils.JwtKey, nil
 		})
 		if err != nil || !tokenStruct.Valid {
 			http.Error(w, "Forbidden", http.StatusForbidden)
@@ -73,4 +75,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Print("Server Started on http://localhost:8081")
 }
