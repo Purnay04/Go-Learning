@@ -49,6 +49,7 @@ func (postRepo *PostRepositoryImpl) GetAllPost() ([]Post, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer result.Close()
 
 	posts := []Post{}
 	for result.Next() {
@@ -67,6 +68,7 @@ func (postRepo *PostRepositoryImpl) GetPostByUser(userId int) ([]Post, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer result.Close()
 
 	posts := []Post{}
 	for result.Next() {

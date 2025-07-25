@@ -7,7 +7,7 @@ import (
 
 type UserService interface {
 	RegisterUser(*repo.User) (*repo.User, error)
-	LoginUser(string, string) (bool, error)
+	LoginUser(string, string) (*repo.User, error)
 }
 
 type UserServiceImpl struct {
@@ -32,6 +32,6 @@ func (userService *UserServiceImpl) RegisterUser(newUser *repo.User) (*repo.User
 	return userService.userRepo.AddUser(newUser)
 }
 
-func (userSerice *UserServiceImpl) LoginUser(email string, password string) (bool, error) {
+func (userSerice *UserServiceImpl) LoginUser(email string, password string) (*repo.User, error) {
 	return userSerice.userRepo.AuthenticateUser(email, password)
 }
